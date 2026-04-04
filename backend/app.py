@@ -93,6 +93,19 @@ asr_model = whisper.load_model("tiny")
 print("Loading BART summarization model...")
 summarizer = hf_pipeline("summarization", model="facebook/bart-large-cnn")
 
+# -------------------- Google Cloud Storage --------------------
+from google.cloud import storage
+
+# Initialize the client (No keys needed! It uses the VM's identity)
+storage_client = storage.Client()
+BUCKET_NAME = "transcribeflow-storage-balaji" # Replace with your bucket name
+
+def upload_to_gcs(local_path, filename):
+    bucket = storage_client.bucket(BUCKET_NAME)
+    blob = bucket.blob(filename)
+    blob.upload_from_filename(local_path)
+    return f"gs://{BUCKET_NAME}/{filename}"
+
 # -------------------- Helper Functions --------------------
 
 STOPWORDS = {
